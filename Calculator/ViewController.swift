@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var displayResultLabel: UILabel!
     
     var stillTyping = false
+    var dotIsPlaced = false
     var firstOperand: Double = 0
     var secondOperand: Double = 0
     var operationSign: String = ""
@@ -21,14 +22,17 @@ class ViewController: UIViewController {
         }
         
         set {
-            displayResultLabel.text = "\(newValue)"
+            let value = "\(newValue)"
+            let valueArray = value.components(separatedBy: String("."))
+            
+            if valueArray[1] == "0" {
+                displayResultLabel.text = "\(valueArray[0])"
+            } else {
+                displayResultLabel.text = "\(newValue)"
+            }
+            
             stillTyping = false
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func numberPressed(_ sender: UIButton) {
@@ -47,7 +51,7 @@ class ViewController: UIViewController {
         operationSign = (sender.titleLabel?.text)! // возможно тут ошибка
         firstOperand = currentInput
         stillTyping = false
-        
+        dotIsPlaced = false
     }
     
     func operationWithTwoOperand(operation: (Double, Double) -> Double) {
@@ -68,9 +72,9 @@ class ViewController: UIViewController {
     }
     
     func divide(_ operand1: Double, _ operand2: Double) -> Double? {
-//        guard operand2 != 0 else {
-//            return nil
-//        }
+        guard operand2 != 0 else {
+            return nil
+        }
         return operand1 / operand2
     }
     
@@ -79,6 +83,8 @@ class ViewController: UIViewController {
         if stillTyping {
             secondOperand = currentInput
         }
+        
+        dotIsPlaced = false
         
         switch operationSign {
         case "+":
@@ -91,13 +97,51 @@ class ViewController: UIViewController {
             if let result = divide(firstOperand, secondOperand) {
                     currentInput = result
             } else {
-                    // Обработка деления на ноль
                     displayResultLabel.text = "Error"
                 }
         default: break
         }
-        
     }
     
+    @IBAction func clearButtonPressed(_ sender: UIButton) {
+        displayResultLabel.text = "0"
+        firstOperand = 0.0
+        secondOperand = 0.0
+        currentInput = 0
+        stillTyping = false
+        dotIsPlaced = false
+        operationSign = ""
+    }
     
+    @IBAction func plusMinusButtonPressed(_ sender: UIButton) {
+        currentInput = -currentInput
+    }
+    
+    @IBAction func percentageButtonPressed(_ sender: UIButton) {
+        if firstOperand == 0 {
+            currentInput = currentInput / 100
+        } else {
+            secondOperand = firstOperand * currentInput / 100
+        }
+        stillTyping = false
+    }
+    
+    @IBAction func squareRootButtonPressed(_ sender: UIButton) {
+        
+        if currentInput > 0  {
+            currentInput = sqrt(currentInput)
+        } else {
+            displayResultLabel.text = "Error"
+        }
+    }
+    
+    @IBAction func dotButtonPressed(_ sender: UIButton) {
+        if stillTyping && !dotIsPlaced {
+            displayResultLabel.text = displayResultLabel.text! + "."
+            dotIsPlaced = true
+        } else if !stillTyping && !dotIsPlaced {
+            displayResultLabel.text = "0."
+            stillTyping = true
+        }
+    }
 }
