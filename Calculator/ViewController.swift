@@ -48,7 +48,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func twoOperandsSignPressed(_ sender: UIButton) {
-        operationSign = (sender.titleLabel?.text)! // возможно тут ошибка
+        operationSign = (sender.titleLabel?.text)!
         firstOperand = currentInput
         stillTyping = false
         dotIsPlaced = false
